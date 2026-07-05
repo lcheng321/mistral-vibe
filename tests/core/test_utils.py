@@ -356,3 +356,24 @@ class TestFileWriteLock:
         release.set()
         await asyncio.gather(t1, t2)
         assert order == ["first-acquired", "first-released", "second-acquired"]
+
+
+class TestSafeCwd:
+    def test_safe_cwd_returns_cwd_normally(self) -> None:
+        from vibe.core.utils.paths import safe_cwd
+
+        assert safe_cwd() == Path.cwd()
+
+    def test_safe_cwd_falls_back_to_home_when_cwd_deleted(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from vibe.core.utils.paths import safe_cwd
+
+        monkeypatch.setattr(
+            Path,
+            "cwd",
+            classmethod(
+                lambda cls: (_ for _ in ()).throw(FileNotFoundError("deleted"))
+            ),
+        )
+        assert safe_cwd() == Path.home()

@@ -40,3 +40,16 @@ def is_dangerous_directory(path: Path | str = ".") -> tuple[bool, str]:
         except (OSError, ValueError):
             continue
     return False, ""
+
+
+def safe_cwd() -> Path:
+    """Return the current working directory, falling back to the home directory
+    if the working directory has been deleted while the process is running.
+
+    Fixes #846: Path.cwd() raises FileNotFoundError when the working directory
+    is deleted by another process during a session.
+    """
+    try:
+        return Path.cwd()
+    except FileNotFoundError:
+        return Path.home()

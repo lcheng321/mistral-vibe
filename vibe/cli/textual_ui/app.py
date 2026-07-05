@@ -238,6 +238,7 @@ from vibe.core.utils import (
     CancellationReason,
     get_user_cancellation_message,
     is_dangerous_directory,
+    safe_cwd,
 )
 
 _VSCODE_FAMILY_TERMINALS = {Terminal.VSCODE, Terminal.VSCODE_INSIDERS, Terminal.CURSOR}
@@ -968,7 +969,7 @@ class VibeApp(App):  # noqa: PLR0904
         self, content: str, *, skill_name: str | None = None
     ) -> bool:
         payload = await asyncio.to_thread(
-            build_path_prompt_payload, content, base_dir=Path.cwd()
+            build_path_prompt_payload, content, base_dir=safe_cwd()
         )
         images = await self._prepare_images_or_abort(payload)
         if images is None:
@@ -1670,7 +1671,7 @@ class VibeApp(App):  # noqa: PLR0904
         self, message: str, *, title_source: str | None = None
     ) -> None:
         prompt_payload = await asyncio.to_thread(
-            build_path_prompt_payload, message, base_dir=Path.cwd()
+            build_path_prompt_payload, message, base_dir=safe_cwd()
         )
         images = await self._prepare_images_or_abort(prompt_payload)
         if images is None:
@@ -1890,7 +1891,7 @@ class VibeApp(App):  # noqa: PLR0904
             # Payload building, prompt rendering, and title segmentation all
             # stat or read @-mentioned files; keep them off the UI thread.
             prompt_payload = prebuilt_payload or await asyncio.to_thread(
-                build_path_prompt_payload, prompt, base_dir=Path.cwd()
+                build_path_prompt_payload, prompt, base_dir=safe_cwd()
             )
             self._send_at_mention_telemetry(prompt_payload, message_id)
             images = await self._resolve_turn_images(prompt_payload, prebuilt_images)
@@ -1902,7 +1903,7 @@ class VibeApp(App):  # noqa: PLR0904
             auto_title: str | None = None
             if self.agent_loop.session_logger.needs_initial_auto_title():
                 title_segments = await asyncio.to_thread(
-                    build_title_segments, title_source or prompt, base_dir=Path.cwd()
+                    build_title_segments, title_source or prompt, base_dir=safe_cwd()
                 )
                 auto_title = format_session_title(title_segments) or None
             self._narrator_manager.cancel()

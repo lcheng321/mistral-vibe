@@ -21,7 +21,7 @@ from vibe.core.utils.http import (
 )
 from vibe.core.utils.matching import name_matches
 from vibe.core.utils.merge import MergeConflictError, MergeStrategy
-from vibe.core.utils.paths import is_dangerous_directory
+from vibe.core.utils.paths import is_dangerous_directory, safe_cwd
 from vibe.core.utils.platform import (
     get_platform_display_name,
     get_platform_id,
@@ -73,5 +73,6 @@ __all__ = [
     "kill_async_subprocess",
     "name_matches",
     "run_sync",
+    "safe_cwd",
     "utc_now",
 ]
