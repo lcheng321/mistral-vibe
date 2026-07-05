@@ -109,16 +109,14 @@ def _migrate_model_renames(data: dict[str, Any]) -> bool:
     """Rename devstral-2 to mistral-medium-3.5 and update its config."""
     changed = False
     for model in data.get("models", []):
-        if (
-            model.get("name") == "mistral-vibe-cli-latest"
-            and model.get("alias") == "devstral-2"
-        ):
+        if model.get("alias") == "devstral-2":
             model["alias"] = "mistral-medium-3.5"
-            model["temperature"] = 1.0
-            model["input_price"] = 1.5
-            model["output_price"] = 7.5
-            model["thinking"] = "high"
             changed = True
+            if model.get("name") == "mistral-vibe-cli-latest":
+                model["temperature"] = 1.0
+                model["input_price"] = 1.5
+                model["output_price"] = 7.5
+                model["thinking"] = "high"
 
         if (
             model.get("name") == "mistral-vibe-cli-latest"
